@@ -306,6 +306,8 @@
                                         id="share-toggle-dot"></span>
                                 </div>
                             </label>
+                            <button onclick="saveCurrentNoteState(true)"
+                                class="text-primary font-bold text-sm px-4 py-1.5 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 shadow-sm active:scale-95 transition-all">저장</button>
                             <button onclick="deleteCurrentNote()"
                                 class="text-red-500 font-bold text-sm px-3 py-1.5 rounded-lg border border-red-200 bg-white hover:bg-red-50 shadow-sm active:scale-95 transition-all">삭제</button>
                         </div>
@@ -642,6 +644,7 @@
                 }
             } else {
                 // 실패 시 롤백
+                alert("매물 저장에 실패했습니다. 데이터베이스 연결을 확인해주세요.");
                 rentals = rentals.filter(r => r.id !== tempId);
                 renderRentals();
             }
@@ -1324,7 +1327,7 @@
             }, 1000);
         }
 
-        async function saveCurrentNoteState() {
+        async function saveCurrentNoteState(manualSave = false) {
             const id = document.getElementById('editor-note-id').value;
             const title = document.getElementById('editor-note-title').value;
             const content = document.getElementById('editor-note-content').value;
@@ -1350,6 +1353,9 @@
                     notes[noteIndex].id = res.id;
                     document.getElementById('editor-note-id').value = res.id;
                 }
+                if (manualSave) alert("메모가 성공적으로 저장되었습니다!");
+            } else {
+                if (manualSave) alert("메모 저장에 실패했습니다. DB 연결을 확인해주세요.");
             }
             document.getElementById('sync-icon-notes').classList.add('hidden');
         }
