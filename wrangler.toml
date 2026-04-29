@@ -1,0 +1,8 @@
+name = "real-estate-lite"
+pages_build_output_dir = "./public"
+compatibility_date = "2024-02-26"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "rental-db"
+database_id = "2c5364c5-2eb0-4661-b9ed-3c6863e3623e"
