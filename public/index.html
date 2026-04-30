@@ -1794,7 +1794,12 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 mb-1">유형</label>
-                                <input type="text" id="ad-field-usage_type" value="${data.usage_type || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 일반음식점">
+                                <select id="ad-field-usage_type" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500 bg-white">
+                                    <option value="월세" ${data.usage_type === '월세' ? 'selected' : ''}>월세</option>
+                                    <option value="년세" ${data.usage_type === '년세' ? 'selected' : ''}>년세</option>
+                                    <option value="전세" ${data.usage_type === '전세' ? 'selected' : ''}>전세</option>
+                                    <option value="매매" ${data.usage_type === '매매' ? 'selected' : ''}>매매</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 mb-1">평수</label>
@@ -1861,7 +1866,12 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 mb-1">유형</label>
-                                <input type="text" id="ad-field-usage_type" value="${data.usage_type || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                                <select id="ad-field-usage_type" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500 bg-white">
+                                    <option value="월세" ${data.usage_type === '월세' ? 'selected' : ''}>월세</option>
+                                    <option value="년세" ${data.usage_type === '년세' ? 'selected' : ''}>년세</option>
+                                    <option value="전세" ${data.usage_type === '전세' ? 'selected' : ''}>전세</option>
+                                    <option value="매매" ${data.usage_type === '매매' ? 'selected' : ''}>매매</option>
+                                </select>
                             </div>
                         </div>
                         <div>
@@ -1940,7 +1950,12 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 mb-1">유형</label>
-                                <input type="text" id="ad-field-usage_type" value="${data.usage_type || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                                <select id="ad-field-usage_type" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500 bg-white">
+                                    <option value="월세" ${data.usage_type === '월세' ? 'selected' : ''}>월세</option>
+                                    <option value="년세" ${data.usage_type === '년세' ? 'selected' : ''}>년세</option>
+                                    <option value="전세" ${data.usage_type === '전세' ? 'selected' : ''}>전세</option>
+                                    <option value="매매" ${data.usage_type === '매매' ? 'selected' : ''}>매매</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 mb-1">평수</label>
