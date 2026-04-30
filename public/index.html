@@ -1577,6 +1577,18 @@
             renderAdsList();
         }
 
+        function openNaverMap() {
+            const addr = document.getElementById('ad-field-address').value;
+            if (!addr) { alert('소재지를 입력해주세요.'); return; }
+            window.open(`https://map.naver.com/v5/search/${encodeURIComponent(addr)}`, '_blank');
+        }
+
+        function openKakaoMap() {
+            const addr = document.getElementById('ad-field-address').value;
+            if (!addr) { alert('소재지를 입력해주세요.'); return; }
+            window.open(`https://map.kakao.com/?q=${encodeURIComponent(addr)}`, '_blank');
+        }
+
         function setAdCategoryFilter(category) {
             currentAdCategoryFilter = category;
             
@@ -1707,7 +1719,13 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">소재지</label>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-xs font-bold text-gray-500">소재지</label>
+                                <div class="flex gap-1">
+                                    <button onclick="openNaverMap()" class="text-[10px] bg-[#03C75A] text-white px-2 py-0.5 rounded font-bold shadow-sm">네이버</button>
+                                    <button onclick="openKakaoMap()" class="text-[10px] bg-[#FEE500] text-[#191919] px-2 py-0.5 rounded font-bold shadow-sm">카카오</button>
+                                </div>
+                            </div>
                             <input type="text" id="ad-field-address" value="${data.address || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
@@ -1794,7 +1812,13 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">소재지</label>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-xs font-bold text-gray-500">소재지</label>
+                                <div class="flex gap-1">
+                                    <button onclick="openNaverMap()" class="text-[10px] bg-[#03C75A] text-white px-2 py-0.5 rounded font-bold shadow-sm">네이버</button>
+                                    <button onclick="openKakaoMap()" class="text-[10px] bg-[#FEE500] text-[#191919] px-2 py-0.5 rounded font-bold shadow-sm">카카오</button>
+                                </div>
+                            </div>
                             <input type="text" id="ad-field-address" value="${data.address || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
@@ -1881,7 +1905,13 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">소재지</label>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-xs font-bold text-gray-500">소재지</label>
+                                <div class="flex gap-1">
+                                    <button onclick="openNaverMap()" class="text-[10px] bg-[#03C75A] text-white px-2 py-0.5 rounded font-bold shadow-sm">네이버</button>
+                                    <button onclick="openKakaoMap()" class="text-[10px] bg-[#FEE500] text-[#191919] px-2 py-0.5 rounded font-bold shadow-sm">카카오</button>
+                                </div>
+                            </div>
                             <input type="text" id="ad-field-address" value="${data.address || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
@@ -1969,7 +1999,13 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">소재지</label>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-xs font-bold text-gray-500">소재지</label>
+                                <div class="flex gap-1">
+                                    <button onclick="openNaverMap()" class="text-[10px] bg-[#03C75A] text-white px-2 py-0.5 rounded font-bold shadow-sm">네이버</button>
+                                    <button onclick="openKakaoMap()" class="text-[10px] bg-[#FEE500] text-[#191919] px-2 py-0.5 rounded font-bold shadow-sm">카카오</button>
+                                </div>
+                            </div>
                             <input type="text" id="ad-field-address" value="${data.address || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
@@ -2047,7 +2083,13 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">소재지</label>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-xs font-bold text-gray-500">소재지</label>
+                                <div class="flex gap-1">
+                                    <button onclick="openNaverMap()" class="text-[10px] bg-[#03C75A] text-white px-2 py-0.5 rounded font-bold shadow-sm">네이버</button>
+                                    <button onclick="openKakaoMap()" class="text-[10px] bg-[#FEE500] text-[#191919] px-2 py-0.5 rounded font-bold shadow-sm">카카오</button>
+                                </div>
+                            </div>
                             <input type="text" id="ad-field-address" value="${data.address || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
