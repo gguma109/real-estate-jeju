@@ -2192,7 +2192,13 @@
             });
 
             if (res && res.success) {
-                ads[adIndex].id = res.id; // Update ID if it was temp
+                // 로컬 데이터 업데이트
+                ads[adIndex] = {
+                    ...updatedAd,
+                    id: res.id,
+                    updated_at: new Date().toISOString()
+                };
+                
                 if (manualSave) {
                     alert("성공적으로 저장되었습니다!");
                     closeAdEditor();
