@@ -333,10 +333,72 @@
 
             <!-- ===== TAB: 광고매물 ===== -->
             <div id="content-ads" class="hidden flex-1 flex flex-col bg-white">
-                <div class="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-500">
-                    <div class="text-6xl mb-4 opacity-20">📢</div>
-                    <p class="font-bold mb-2">광고 매물 탭이 추가되었습니다.</p>
-                    <p class="text-sm">현재 탭 구성만 완료된 상태입니다.<br>추후 필요한 항목들을 말씀해 주시면 개발해 드릴게요!</p>
+                <!-- Ads List View -->
+                <div id="ads-list-view" class="flex-1 overflow-y-auto p-4 relative bg-gray-50 pb-24">
+                    <div id="loadingIndicatorAds" class="hidden justify-center items-center py-10 flex-col gap-3">
+                        <div class="spinner"></div>
+                        <p class="text-xs text-gray-500 font-bold">광고 매물을 불러오는 중...</p>
+                    </div>
+
+                    <div id="ads-list" class="space-y-3"></div>
+                    
+                    <!-- Empty State -->
+                    <div id="ads-empty" class="text-center py-24 hidden">
+                        <div class="text-5xl mb-4 opacity-30">📢</div>
+                        <p class="text-gray-500 font-bold mb-1">등록된 광고 매물이 없습니다.</p>
+                        <p class="text-gray-400 text-sm">하단의 + 버튼을 눌러 새 광고를 등록하세요.</p>
+                    </div>
+
+                    <!-- FAB Add Button -->
+                    <button onclick="showAdCategoryModal()"
+                        class="fixed bottom-6 right-6 w-14 h-14 bg-orange-500 text-white rounded-full shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] flex flex-col items-center justify-center text-3xl font-light hover:bg-orange-600 active:scale-90 transition-all z-50">
+                        <span class="mt-[-2px]">+</span>
+                    </button>
+                </div>
+
+                <!-- Ad Editor View -->
+                <div id="ads-editor-view" class="hidden flex-1 flex flex-col bg-white animate-fade-in-down pb-20">
+                    <div class="bg-gray-50 border-b border-gray-200 p-3 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+                        <button onclick="closeAdEditor()"
+                            class="text-gray-500 font-bold text-sm px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-100 shadow-sm active:scale-95 transition-all flex items-center gap-1">
+                            <span>◀</span> 뒤로
+                        </button>
+                        <div id="ad-editor-title" class="font-bold text-gray-800 text-sm">광고 매물 편집</div>
+                        <button onclick="saveCurrentAd(true)"
+                            class="text-orange-600 font-bold text-sm px-4 py-1.5 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 shadow-sm active:scale-95 transition-all">
+                            저장
+                        </button>
+                    </div>
+                    
+                    <div id="ad-editor-content" class="p-4 flex-1 overflow-y-auto bg-white">
+                        <!-- Dynamic form will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Category Selection Modal (Simple overlay) -->
+                <div id="ad-category-modal" class="hidden fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-6">
+                    <div class="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl">
+                        <h3 class="text-lg font-black text-gray-800 mb-4">매물 카테고리 선택</h3>
+                        <div class="space-y-2">
+                            <button onclick="addAd('원.투.쓰리룸&공동주택')" class="w-full py-3 px-4 bg-gray-50 hover:bg-orange-50 border border-gray-100 rounded-xl text-left font-bold text-gray-700 transition-colors flex justify-between items-center">
+                                🏠 원·투·쓰리룸 & 공동주택
+                                <span class="text-xs text-gray-400">▶</span>
+                            </button>
+                            <button onclick="alert('곧 업데이트 예정입니다!'); hideAdCategoryModal();" class="w-full py-3 px-4 bg-gray-50 hover:bg-orange-50 border border-gray-100 rounded-xl text-left font-bold text-gray-700 transition-colors flex justify-between items-center opacity-50">
+                                🏬 상가
+                                <span class="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded ml-2">준비중</span>
+                            </button>
+                            <button onclick="alert('곧 업데이트 예정입니다!'); hideAdCategoryModal();" class="w-full py-3 px-4 bg-gray-50 hover:bg-orange-50 border border-gray-100 rounded-xl text-left font-bold text-gray-700 transition-colors flex justify-between items-center opacity-50">
+                                🏗️ 주택&건물 통매매
+                                <span class="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded ml-2">준비중</span>
+                            </button>
+                            <button onclick="alert('곧 업데이트 예정입니다!'); hideAdCategoryModal();" class="w-full py-3 px-4 bg-gray-50 hover:bg-orange-50 border border-gray-100 rounded-xl text-left font-bold text-gray-700 transition-colors flex justify-between items-center opacity-50">
+                                ⛳ 토지
+                                <span class="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded ml-2">준비중</span>
+                            </button>
+                        </div>
+                        <button onclick="hideAdCategoryModal()" class="w-full mt-6 py-3 text-sm font-bold text-gray-400">취소</button>
+                    </div>
                 </div>
             </div>
 
@@ -381,6 +443,10 @@
         // Notes State
         let notes = [];
         let noteSyncTimeout = null;
+
+        // Ads State
+        let ads = [];
+        let adSyncTimeout = null;
 
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -529,6 +595,10 @@
                 aBtn.className = activeClass;
                 aContent.classList.remove('hidden');
                 aContent.classList.add('flex');
+
+                if (document.getElementById('ads-editor-view').classList.contains('hidden')) {
+                    loadAdsFromCloud();
+                }
             }
         }
 
@@ -1395,7 +1465,7 @@
 
         // --- 2.8 외부 공유 뷰 렌더러 ---
         async function renderSharedView(shareId) {
-            // 메인 요소 숨김 & 공유뷰 노출
+            // ... (original renderSharedView content)
             document.getElementById('view-login').style.display = 'none';
             document.getElementById('view-main').style.display = 'none';
             const vShared = document.getElementById('view-shared');
@@ -1423,6 +1493,250 @@
                     <div class="text-red-500 font-bold mb-2">오류: ${err.message}</div>
                     <p class="text-sm">작성자가 공유를 해제했거나 삭제된 노트일 수 있습니다.</p>
                 `;
+            }
+        }
+
+        // --- 4. 광고 매물 (Ads) 로직 ---
+        function showAdCategoryModal() {
+            document.getElementById('ad-category-modal').classList.remove('hidden');
+        }
+
+        function hideAdCategoryModal() {
+            document.getElementById('ad-category-modal').classList.add('hidden');
+        }
+
+        async function loadAdsFromCloud() {
+            document.getElementById('loadingIndicatorAds').classList.remove('hidden');
+            document.getElementById('ads-list').innerHTML = '';
+            document.getElementById('ads-empty').classList.add('hidden');
+
+            const data = await fetchWithAuth('/api/ads');
+            document.getElementById('loadingIndicatorAds').classList.add('hidden');
+
+            if (data && Array.isArray(data)) {
+                ads = data.map(item => ({
+                    ...item,
+                    data: typeof item.data === 'string' ? JSON.parse(item.data) : (item.data || {})
+                }));
+            } else {
+                ads = [];
+            }
+            renderAdsList();
+        }
+
+        function renderAdsList() {
+            const list = document.getElementById('ads-list');
+            const empty = document.getElementById('ads-empty');
+            const indicator = document.getElementById('loadingIndicatorAds');
+
+            if (!indicator.classList.contains('hidden')) return;
+
+            if (!ads || ads.length === 0) {
+                list.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            list.innerHTML = ads.map(a => {
+                const d = a.data || {};
+                return `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer hover:border-orange-300 transition-colors active:scale-[0.98]" onclick="openAdEditor('${a.id}')">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-orange-100 text-orange-700">${a.category}</span>
+                        <button onclick="event.stopPropagation(); deleteAd('${a.id}')" class="text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 bg-red-50 rounded">삭제</button>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-1">${d.address || '소재지 미입력'} ${d.room_no || ''}</h3>
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <span class="font-bold text-blue-600">${d.usage_type || ''}</span>
+                        <span>|</span>
+                        <span>${d.jeonse_price || d.rent || '가격 미정'}</span>
+                        <span>|</span>
+                        <span>${d.biz_name || ''}</span>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        async function addAd(category) {
+            hideAdCategoryModal();
+            const tempId = 'temp_' + Date.now();
+            const newAd = {
+                id: tempId,
+                category: category,
+                data: {},
+                email: currentUserEmail
+            };
+            ads.unshift(newAd);
+            renderAdsList();
+            openAdEditor(tempId);
+        }
+
+        function openAdEditor(id) {
+            const ad = ads.find(a => a.id === id);
+            if (!ad) return;
+
+            document.getElementById('ads-list-view').classList.add('hidden');
+            document.getElementById('ads-editor-view').classList.remove('hidden');
+            document.getElementById('ad-editor-title').innerText = ad.category;
+
+            const content = document.getElementById('ad-editor-content');
+            content.innerHTML = `
+                <input type="hidden" id="editor-ad-id" value="${ad.id}">
+                <input type="hidden" id="editor-ad-category" value="${ad.category}">
+                ${generateAdForm(ad.category, ad.data)}
+            `;
+        }
+
+        function generateAdForm(category, data) {
+            if (category === '원.투.쓰리룸&공동주택') {
+                return `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">매물 번호</label>
+                                <input type="text" id="ad-field-ad_no" value="${data.ad_no || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">상호명</label>
+                                <input type="text" id="ad-field-biz_name" value="${data.biz_name || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">종류</label>
+                                <input type="text" id="ad-field-type" value="${data.type || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 빌라, 아파트">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">유형</label>
+                                <select id="ad-field-usage_type" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500 bg-white">
+                                    <option value="월세" ${data.usage_type === '월세' ? 'selected' : ''}>월세</option>
+                                    <option value="년세" ${data.usage_type === '년세' ? 'selected' : ''}>년세</option>
+                                    <option value="전세" ${data.usage_type === '전세' ? 'selected' : ''}>전세</option>
+                                    <option value="매매" ${data.usage_type === '매매' ? 'selected' : ''}>매매</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">소재지</label>
+                            <input type="text" id="ad-field-address" value="${data.address || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">동호수</label>
+                                <input type="text" id="ad-field-room_no" value="${data.room_no || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">평수</label>
+                                <input type="text" id="ad-field-area" value="${data.area || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">입금가</label>
+                                <input type="text" id="ad-field-cost_price" value="${data.cost_price || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">매매가</label>
+                                <input type="text" id="ad-field-sale_price" value="${data.sale_price || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">전세가</label>
+                                <input type="text" id="ad-field-jeonse_price" value="${data.jeonse_price || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">보증금</label>
+                                <input type="text" id="ad-field-deposit" value="${data.deposit || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">년/월세</label>
+                                <input type="text" id="ad-field-rent" value="${data.rent || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">관리비</label>
+                                <input type="text" id="ad-field-maintenance" value="${data.maintenance || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">구조</label>
+                                <input type="text" id="ad-field-structure" value="${data.structure || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 분리형 원룸">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">담당자</label>
+                                <input type="text" id="ad-field-agent" value="${data.agent || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">옵션</label>
+                            <input type="text" id="ad-field-options" value="${data.options || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 풀옵션, TV, 세탁기">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">특이사항</label>
+                            <textarea id="ad-field-notes" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500 resize-none h-24">${data.notes || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+            }
+            return '<p class="text-center py-10 text-gray-400">지원되지 않는 카테고리입니다.</p>';
+        }
+
+        async function saveCurrentAd(manualSave = false) {
+            const id = document.getElementById('editor-ad-id').value;
+            const category = document.getElementById('editor-ad-category').value;
+            if (!id) return;
+
+            const adIndex = ads.findIndex(a => a.id === id);
+            if (adIndex === -1) return;
+
+            const dynamicData = {};
+            const inputs = document.querySelectorAll('[id^="ad-field-"]');
+            inputs.forEach(input => {
+                const key = input.id.replace('ad-field-', '');
+                dynamicData[key] = input.value;
+            });
+
+            const updatedAd = {
+                ...ads[adIndex],
+                category: category,
+                data: dynamicData,
+                email: currentUserEmail
+            };
+
+            const res = await fetchWithAuth('/api/ads', {
+                method: 'POST',
+                body: JSON.stringify(updatedAd)
+            });
+
+            if (res && res.success) {
+                ads[adIndex].id = res.id; // Update ID if it was temp
+                if (manualSave) {
+                    alert("성공적으로 저장되었습니다!");
+                    closeAdEditor();
+                }
+            } else {
+                if (manualSave) alert("저장 실패. DB 연결을 확인해주세요.");
+            }
+        }
+
+        function closeAdEditor() {
+            document.getElementById('ads-editor-view').classList.add('hidden');
+            document.getElementById('ads-list-view').classList.remove('hidden');
+            renderAdsList();
+        }
+
+        async function deleteAd(id) {
+            if (confirm('이 매물을 영구 삭제하시겠습니까?')) {
+                ads = ads.filter(a => a.id !== id);
+                renderAdsList();
+
+                if (!id.startsWith('temp_')) {
+                    await fetchWithAuth(`/api/ads?id=${id}`, { method: 'DELETE' });
+                }
             }
         }
     </script>
