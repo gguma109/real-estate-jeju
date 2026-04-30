@@ -54,16 +54,3 @@ CREATE TABLE IF NOT EXISTS notes (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-CREATE TABLE IF NOT EXISTS ads (
-    id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
-    title TEXT,
-    platform TEXT,
-    status TEXT DEFAULT '광고중',
-    price TEXT,
-    link TEXT,
-    notes TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
