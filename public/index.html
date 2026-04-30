@@ -2113,152 +2113,6 @@
                     </div>
                 `;
             }
-        }
-alue="${data.maintenance || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">1층 현관 비번</label>
-                                <input type="text" id="ad-field-common_pwd" value="${data.common_pwd || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">세대 비번</label>
-                                <input type="text" id="ad-field-unit_pwd" value="${data.unit_pwd || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">구조</label>
-                                <input type="text" id="ad-field-structure" value="${data.structure || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 분리형 원룸">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">방향</label>
-                                <input type="text" id="ad-field-direction" value="${data.direction || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 남향">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">담당자</label>
-                                <input type="text" id="ad-field-agent" value="${data.agent || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">주차가능여부</label>
-                                <input type="text" id="ad-field-parking" value="${data.parking || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 가능, 불가">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">옵션</label>
-                            <input type="text" id="ad-field-options" value="${data.options || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 풀옵션, TV, 세탁기">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">난방연료</label>
-                                <input type="text" id="ad-field-heating" value="${data.heating || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">입주정보</label>
-                                <input type="text" id="ad-field-move_in_info" value="${data.move_in_info || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">특이사항</label>
-                            <textarea id="ad-field-notes" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500 resize-none h-24">${data.notes || ''}</textarea>
-                        </div>
-                    </div>
-                `;
-            } else if (category === '상가') {
-                return `
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">매물 번호</label>
-                                <input type="text" id="ad-field-ad_no" value="${data.ad_no || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">상호명</label>
-                                <input type="text" id="ad-field-biz_name" value="${data.biz_name || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="text-xs font-bold text-gray-500">소재지</label>
-                                <div class="flex gap-1">
-                                    <button onclick="openNaverMap()" class="text-[10px] bg-[#03C75A] text-white px-2 py-0.5 rounded font-bold shadow-sm">네이버</button>
-                                    <button onclick="openKakaoMap()" class="text-[10px] bg-[#FEE500] text-[#191919] px-2 py-0.5 rounded font-bold shadow-sm">카카오</button>
-                                </div>
-                            </div>
-                            <input type="text" id="ad-field-address" value="${data.address || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">유형</label>
-                                <select id="ad-field-usage_type" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500 bg-white">
-                                    <option value="월세" ${data.usage_type === '월세' ? 'selected' : ''}>월세</option>
-                                    <option value="년세" ${data.usage_type === '년세' ? 'selected' : ''}>년세</option>
-                                    <option value="전세" ${data.usage_type === '전세' ? 'selected' : ''}>전세</option>
-                                    <option value="매매" ${data.usage_type === '매매' ? 'selected' : ''}>매매</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">평수</label>
-                                <input type="text" id="ad-field-area" value="${data.area || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">보증금</label>
-                                <input type="text" id="ad-field-deposit" value="${data.deposit || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">년/월세</label>
-                                <input type="text" id="ad-field-rent" value="${data.rent || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">보증금</label>
-                                <input type="text" id="ad-field-deposit" value="${data.deposit || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">년/월세</label>
-                                <input type="text" id="ad-field-rent" value="${data.rent || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">관리비</label>
-                                <input type="text" id="ad-field-maintenance" value="${data.maintenance || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">1층 현관 비번</label>
-                                <input type="text" id="ad-field-common_pwd" value="${data.common_pwd || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">세대 비번</label>
-                                <input type="text" id="ad-field-unit_pwd" value="${data.unit_pwd || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">구조</label>
-                                <input type="text" id="ad-field-structure" value="${data.structure || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 분리형 원룸">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">담당자</label>
-                                <input type="text" id="ad-field-agent" value="${data.agent || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">옵션</label>
-                            <input type="text" id="ad-field-options" value="${data.options || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500" placeholder="예: 풀옵션, TV, 세탁기">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">특이사항</label>
-                            <textarea id="ad-field-notes" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500 resize-none h-24">${data.notes || ''}</textarea>
-                        </div>
-                    </div>
-                `;
             } else if (category === '상가') {
                 return `
                     <div class="space-y-4">
@@ -2515,7 +2369,8 @@ alue="${data.maintenance || ''}" class="w-full border border-gray-200 rounded-lg
                         </div>
                     </div>
                 `;
-            } else if (category === '기타') {
+            } else {
+                // 기타 카테고리
                 return `
                     <div class="space-y-4">
                         <div class="grid grid-cols-2 gap-3">
@@ -2615,6 +2470,7 @@ alue="${data.maintenance || ''}" class="w-full border border-gray-200 rounded-lg
                 `;
             }
             return '<p class="text-center py-10 text-gray-400">지원되지 않는 카테고리입니다.</p>';
+        }
         }
 
         async function saveCurrentAd(manualSave = false) {
