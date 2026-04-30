@@ -785,10 +785,12 @@
                     }
                 }
             } else {
+                const errorMsg = (result && result.error) ? result.error : "서버 응답 오류 (DB 연결 확인 필요)";
+                alert(`매물 저장에 실패했습니다: ${errorMsg}`);
                 // 실패 시 롤백
-                alert("매물 저장에 실패했습니다. 데이터베이스 연결을 확인해주세요.");
                 rentals = rentals.filter(r => r.id !== tempId);
                 renderRentals();
+                closeRentalEditor();
             }
         }
 
@@ -826,6 +828,11 @@
                 method: 'POST', // 우리 백엔드 POST 로직이 사실상 Upsert 기능을 하므로 재활용하거나 분리. 여기서는 단순화 위해.
                 body: JSON.stringify(rental)
             });
+            if (!res || !res.success) {
+                const errorMsg = (res && res.error) ? res.error : "서버 응답 오류";
+                console.error('Sync failed', res);
+                // 실시간 동기화 실패는 조용히 로그만 남기거나 아이콘 색상 변경 등으로 알림 (여기서는 로그)
+            }
             document.getElementById('sync-icon').classList.add('hidden');
         }
 
@@ -1500,7 +1507,8 @@
                 }
                 if (manualSave) alert("메모가 성공적으로 저장되었습니다!");
             } else {
-                if (manualSave) alert("메모 저장에 실패했습니다. DB 연결을 확인해주세요.");
+                const errorMsg = (res && res.error) ? res.error : "서버 응답 오류 (DB 연결 확인 필요)";
+                if (manualSave) alert(`저장 실패: ${errorMsg}`);
             }
             document.getElementById('sync-icon-notes').classList.add('hidden');
         }
@@ -2190,7 +2198,8 @@
                     closeAdEditor();
                 }
             } else {
-                if (manualSave) alert("저장 실패. DB 연결을 확인해주세요.");
+                const errorMsg = (res && res.error) ? res.error : "서버 응답 오류 (DB 연결 확인 필요)";
+                if (manualSave) alert(`저장 실패: ${errorMsg}`);
             }
         }
 
