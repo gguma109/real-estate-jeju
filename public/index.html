@@ -156,6 +156,32 @@
                 transform: rotate(360deg);
             }
         }
+
+        .category-chip {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+
+        .category-chip.active {
+            background-color: #f97316;
+            border-color: #f97316;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
@@ -335,6 +361,26 @@
             <div id="content-ads" class="hidden flex-1 flex flex-col bg-white">
                 <!-- Ads List View -->
                 <div id="ads-list-view" class="flex-1 overflow-y-auto p-4 relative bg-gray-50 pb-24">
+                    
+                    <!-- Search and Filter Header -->
+                    <div class="mb-4 space-y-3">
+                        <!-- Search Bar -->
+                        <div class="relative">
+                            <input type="text" id="ad-search-no" oninput="renderAdsList()" 
+                                placeholder="매물번호로 검색..." 
+                                class="w-full bg-white border border-gray-200 rounded-xl px-10 py-3 text-sm outline-none focus:border-orange-500 shadow-sm transition-all">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                        </div>
+
+                        <!-- Category Filter (Horizontal Scroll) -->
+                        <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                            <button onclick="setAdCategoryFilter('전체')" class="category-chip active whitespace-nowrap" id="filter-ad-all">전체</button>
+                            <button onclick="setAdCategoryFilter('원.투.쓰리룸&공동주택')" class="category-chip whitespace-nowrap" id="filter-ad-room">🏠 원룸등</button>
+                            <button onclick="setAdCategoryFilter('상가')" class="category-chip whitespace-nowrap opacity-50" id="filter-ad-store">🏬 상가</button>
+                            <button onclick="setAdCategoryFilter('토지')" class="category-chip whitespace-nowrap opacity-50" id="filter-ad-land">⛳ 토지</button>
+                        </div>
+                    </div>
+
                     <div id="loadingIndicatorAds" class="hidden justify-center items-center py-10 flex-col gap-3">
                         <div class="spinner"></div>
                         <p class="text-xs text-gray-500 font-bold">광고 매물을 불러오는 중...</p>
@@ -447,6 +493,7 @@
         // Ads State
         let ads = [];
         let adSyncTimeout = null;
+        let currentAdCategoryFilter = '전체';
 
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -1524,26 +1571,60 @@
             renderAdsList();
         }
 
+        function setAdCategoryFilter(category) {
+            currentAdCategoryFilter = category;
+            
+            // Update UI chips
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            
+            if (category === '전체') document.getElementById('filter-ad-all').classList.add('active');
+            else if (category === '원.투.쓰리룸&공동주택') document.getElementById('filter-ad-room').classList.add('active');
+            else if (category === '상가') document.getElementById('filter-ad-store').classList.add('active');
+            else if (category === '토지') document.getElementById('filter-ad-land').classList.add('active');
+
+            renderAdsList();
+        }
+
         function renderAdsList() {
             const list = document.getElementById('ads-list');
             const empty = document.getElementById('ads-empty');
             const indicator = document.getElementById('loadingIndicatorAds');
+            const searchNo = document.getElementById('ad-search-no').value.trim();
 
             if (!indicator.classList.contains('hidden')) return;
 
-            if (!ads || ads.length === 0) {
+            // 1. Filter
+            let filteredAds = ads.filter(a => {
+                const matchesCategory = currentAdCategoryFilter === '전체' || a.category === currentAdCategoryFilter;
+                const matchesSearch = !searchNo || (a.data && a.data.ad_no && a.data.ad_no.includes(searchNo));
+                return matchesCategory && matchesSearch;
+            });
+
+            // 2. Sort by ad_no (numeric sort)
+            filteredAds.sort((a, b) => {
+                const noA = (a.data && a.data.ad_no) || '';
+                const noB = (b.data && b.data.ad_no) || '';
+                return noA.localeCompare(noB, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
+            if (!filteredAds || filteredAds.length === 0) {
                 list.innerHTML = '';
                 empty.classList.remove('hidden');
                 return;
             }
             empty.classList.add('hidden');
 
-            list.innerHTML = ads.map(a => {
+            list.innerHTML = filteredAds.map(a => {
                 const d = a.data || {};
                 return `
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer hover:border-orange-300 transition-colors active:scale-[0.98]" onclick="openAdEditor('${a.id}')">
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-orange-100 text-orange-700">${a.category}</span>
+                        <div class="flex gap-1 items-center">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-orange-100 text-orange-700">${a.category}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-600">No.${d.ad_no || '-'}</span>
+                        </div>
                         <button onclick="event.stopPropagation(); deleteAd('${a.id}')" class="text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 bg-red-50 rounded">삭제</button>
                     </div>
                     <h3 class="font-bold text-gray-800 mb-1">${d.address || '소재지 미입력'} ${d.room_no || ''}</h3>
