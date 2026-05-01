@@ -1882,6 +1882,16 @@
                                 </select>
                             </div>
                             <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">건축물용도</label>
+                                <input type="text" id="ad-field-usage_building" value="${data.usage_building || data.purpose || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">대지면적</label>
+                                <input type="text" id="ad-field-land_area" value="${data.land_area || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                            <div>
                                 <label class="block text-xs font-bold text-gray-500 mb-1">평수</label>
                                 <input type="text" id="ad-field-area" value="${data.area || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
                             </div>
@@ -1908,17 +1918,23 @@
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">방향</label>
+                                <input type="text" id="ad-field-direction" value="${data.direction || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                            <div>
                                 <label class="block text-xs font-bold text-gray-500 mb-1">구조</label>
                                 <input type="text" id="ad-field-structure" value="${data.structure || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">입주정보</label>
+                                <input type="text" id="ad-field-move_in_info" value="${data.move_in_info || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 mb-1">담당자</label>
                                 <input type="text" id="ad-field-agent" value="${data.agent || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
                             </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">용도</label>
-                            <input type="text" id="ad-field-purpose" value="${data.purpose || ''}" class="w-full border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-500">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-500 mb-1">특이사항</label>
@@ -2275,8 +2291,9 @@
                 const id = input.id;
                 const key = id.replace('ad-field-', '');
                 
-                // 소재지(address)와 상호명(biz_name) 제외
-                if (key === 'address' || key === 'biz_name') return;
+                // 담당자, 소재지, 종류, 상호명 제외
+                const excludedKeys = ['agent', 'address', 'type', 'biz_name'];
+                if (excludedKeys.includes(key)) return;
                 
                 const value = input.value.trim();
                 if (!value) return;
@@ -2307,7 +2324,7 @@
             if (finalContent) {
                 try {
                     await navigator.clipboard.writeText(finalContent);
-                    alert('입력된 내용이 복사되었습니다! (소재지, 상호명 제외)');
+                    alert('입력된 내용이 복사되었습니다! (담당자, 소재지, 종류, 상호명 제외)');
                 } catch (err) {
                     const textArea = document.createElement("textarea");
                     textArea.value = finalContent;
@@ -2315,7 +2332,7 @@
                     textArea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textArea);
-                    alert('입력된 내용이 복사되었습니다! (소재지, 상호명 제외)');
+                    alert('입력된 내용이 복사되었습니다! (담당자, 소재지, 종류, 상호명 제외)');
                 }
             } else {
                 alert('복사할 내용이 없습니다.');
