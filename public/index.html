@@ -2292,7 +2292,7 @@
                 const key = id.replace('ad-field-', '');
                 
                 // 담당자, 소재지, 종류, 상호명 제외
-                const excludedKeys = ['agent', 'address', 'type', 'biz_name'];
+                const excludedKeys = ['agent', 'type', 'biz_name'];
                 if (excludedKeys.includes(key)) return;
                 
                 const value = input.value.trim();
@@ -2324,7 +2324,7 @@
             if (finalContent) {
                 try {
                     await navigator.clipboard.writeText(finalContent);
-                    alert('입력된 내용이 복사되었습니다! (담당자, 소재지, 종류, 상호명 제외)');
+                    alert('입력된 내용이 복사되었습니다! (담당자, 종류, 상호명 제외)');
                 } catch (err) {
                     const textArea = document.createElement("textarea");
                     textArea.value = finalContent;
@@ -2332,7 +2332,7 @@
                     textArea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textArea);
-                    alert('입력된 내용이 복사되었습니다! (담당자, 소재지, 종류, 상호명 제외)');
+                    alert('입력된 내용이 복사되었습니다! (담당자, 종류, 상호명 제외)');
                 }
             } else {
                 alert('복사할 내용이 없습니다.');
