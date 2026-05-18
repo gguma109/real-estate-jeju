@@ -9,7 +9,7 @@ export async function onRequestGet(context) {
 
     try {
         const { results } = await env.DB.prepare(
-            "SELECT * FROM notes WHERE user_id = ? ORDER BY updated_at DESC"
+            "SELECT * FROM notes WHERE user_id = ? AND IFNULL(is_deleted, 0) = 0 ORDER BY updated_at DESC"
         ).bind(token).all();
 
         return new Response(JSON.stringify(results), {
@@ -71,7 +71,7 @@ export async function onRequestDelete(context) {
         if (!id) return new Response(JSON.stringify({ error: "Missing ID" }), { status: 400 });
 
         const result = await env.DB.prepare(
-            "DELETE FROM notes WHERE id = ? AND user_id = ?"
+            "UPDATE notes SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?"
         ).bind(id, token).run();
 
         if (result.meta.changes === 0) {
