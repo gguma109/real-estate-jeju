@@ -366,8 +366,7 @@
                     
                     <!-- Search and Filter Header -->
                     <div class="mb-4 space-y-3">
-                        <!-- Search Bar -->
-                        <div class="flex gap-2 mb-3">
+                        <div class="flex gap-2 mb-2">
                             <div class="relative flex-1">
                                 <input type="text" id="ad-search-no" oninput="renderAdsList()" 
                                     placeholder="매물번호, 주소, 상호명 검색..." 
@@ -377,6 +376,23 @@
                             <button onclick="toggleAdViewMode()" id="ad-view-toggle-btn" class="w-[46px] h-[46px] shrink-0 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-sm text-gray-500 hover:bg-gray-50 transition-colors text-lg" title="보기 모드 전환">
                                 📊
                             </button>
+                        </div>
+                        
+                        <!-- Dropdown Filters -->
+                        <div class="flex gap-2">
+                            <select id="ad-sort-type" onchange="renderAdsList()" class="flex-1 bg-white border border-gray-200 rounded-xl px-2 py-2 text-[12px] outline-none text-gray-600 focus:border-orange-500 shadow-sm">
+                                <option value="latest">최신 등록순</option>
+                                <option value="oldest">과거 등록순</option>
+                                <option value="no_asc">No 낮은순</option>
+                                <option value="no_desc">No 높은순</option>
+                            </select>
+                            <select id="ad-usage-filter" onchange="renderAdsList()" class="flex-1 bg-white border border-gray-200 rounded-xl px-2 py-2 text-[12px] outline-none text-gray-600 focus:border-orange-500 shadow-sm">
+                                <option value="">용도 전체</option>
+                                <option value="매매">매매</option>
+                                <option value="전세">전세</option>
+                                <option value="월세">월세</option>
+                                <option value="년세">년세</option>
+                            </select>
                         </div>
 
                         <!-- Category Filter (Horizontal Scroll) -->
@@ -1679,6 +1695,8 @@
             const empty = document.getElementById('ads-empty');
             const indicator = document.getElementById('loadingIndicatorAds');
             const searchNo = document.getElementById('ad-search-no').value.trim();
+            const usageFilter = document.getElementById('ad-usage-filter') ? document.getElementById('ad-usage-filter').value : '';
+            const sortType = document.getElementById('ad-sort-type') ? document.getElementById('ad-sort-type').value : 'latest';
 
             if (!indicator.classList.contains('hidden')) return;
 
@@ -1690,14 +1708,24 @@
                     (a.data.address && a.data.address.includes(searchNo)) ||
                     (a.data.biz_name && a.data.biz_name.includes(searchNo))
                 ));
-                return matchesCategory && matchesSearch;
+                const matchesUsage = !usageFilter || (a.data && a.data.usage_type === usageFilter);
+                return matchesCategory && matchesSearch && matchesUsage;
             });
 
-            // 2. Sort by ad_no (numeric sort)
+            // 2. Sort
             filteredAds.sort((a, b) => {
-                const noA = (a.data && a.data.ad_no) || '';
-                const noB = (b.data && b.data.ad_no) || '';
-                return noA.localeCompare(noB, undefined, { numeric: true, sensitivity: 'base' });
+                if (sortType === 'latest' || sortType === 'oldest') {
+                    const timeA = a.created_at || a.id;
+                    const timeB = b.created_at || b.id;
+                    const compare = timeB.localeCompare(timeA); // Descending by default
+                    return sortType === 'latest' ? compare : -compare;
+                } else if (sortType === 'no_asc' || sortType === 'no_desc') {
+                    const noA = (a.data && a.data.ad_no) || '';
+                    const noB = (b.data && b.data.ad_no) || '';
+                    const compare = noA.localeCompare(noB, undefined, { numeric: true, sensitivity: 'base' });
+                    return sortType === 'no_desc' ? -compare : compare;
+                }
+                return 0;
             });
 
             if (!filteredAds || filteredAds.length === 0) {
@@ -1718,7 +1746,7 @@
                                 <th class="px-3 py-2 font-bold">유형</th>
                                 <th class="px-3 py-2 font-bold">소재지</th>
                                 <th class="px-3 py-2 font-bold">용도</th>
-                                <th class="px-3 py-2 font-bold">가격</th>
+                                <th class="px-3 py-2 font-bold">보증금/가격</th>
                                 <th class="px-3 py-2 font-bold">상호명</th>
                                 <th class="px-3 py-2 font-bold text-center">관리</th>
                             </tr>
@@ -1726,13 +1754,19 @@
                         <tbody class="divide-y divide-gray-100">
                             ${filteredAds.map(a => {
                                 const d = a.data || {};
+                                let priceStr = d.sale_price || d.jeonse_price || d.rent || '-';
+                                if (d.usage_type === '월세' || d.usage_type === '년세') priceStr = (d.deposit ? d.deposit + '/' : '') + (d.rent || '-');
+                                else if (d.usage_type === '전세') priceStr = d.jeonse_price || d.deposit || '-';
+                                else if (d.usage_type === '매매') priceStr = d.sale_price || '-';
+                                else priceStr = (d.deposit ? d.deposit + '/' : '') + priceStr;
+                                
                                 return `
                                 <tr class="hover:bg-orange-50 cursor-pointer transition-colors" onclick="openAdEditor('${a.id}')">
                                     <td class="px-3 py-2 text-gray-500">${d.ad_no || '-'}</td>
                                     <td class="px-3 py-2 font-bold text-orange-600">${a.category.length > 5 ? a.category.substring(0,5)+'..' : a.category}</td>
                                     <td class="px-3 py-2 font-bold text-gray-800">${d.address || '-'} ${d.room_no || ''}</td>
                                     <td class="px-3 py-2 text-blue-600 font-bold">${d.usage_type || '-'}</td>
-                                    <td class="px-3 py-2 text-gray-600">${d.jeonse_price || d.rent || '-'}</td>
+                                    <td class="px-3 py-2 text-gray-600">${priceStr}</td>
                                     <td class="px-3 py-2 text-gray-500">${d.biz_name || '-'}</td>
                                     <td class="px-3 py-2 text-center">
                                         <button onclick="event.stopPropagation(); deleteAd('${a.id}')" class="text-red-400 hover:text-red-600 font-bold bg-red-50 rounded px-1.5 py-0.5">삭제</button>
@@ -1748,6 +1782,12 @@
                 list.className = 'space-y-3 block';
                 list.innerHTML = filteredAds.map(a => {
                     const d = a.data || {};
+                    let priceStr = d.sale_price || d.jeonse_price || d.rent || '-';
+                    if (d.usage_type === '월세' || d.usage_type === '년세') priceStr = (d.deposit ? d.deposit + '/' : '') + (d.rent || '-');
+                    else if (d.usage_type === '전세') priceStr = d.jeonse_price || d.deposit || '-';
+                    else if (d.usage_type === '매매') priceStr = d.sale_price || '-';
+                    else priceStr = (d.deposit ? d.deposit + '/' : '') + priceStr;
+                    
                     return `
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer hover:border-orange-300 transition-colors active:scale-[0.98]" onclick="openAdEditor('${a.id}')">
                         <div class="flex justify-between items-start mb-2">
@@ -1761,7 +1801,7 @@
                         <div class="flex items-center gap-2 text-xs text-gray-500">
                             <span class="font-bold text-blue-600">${d.usage_type || ''}</span>
                             <span>|</span>
-                            <span>${d.jeonse_price || d.rent || '가격 미정'}</span>
+                            <span>${priceStr}</span>
                             <span>|</span>
                             <span>${d.biz_name || ''}</span>
                         </div>
