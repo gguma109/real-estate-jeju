@@ -369,7 +369,7 @@
                         <!-- Search Bar -->
                         <div class="relative">
                             <input type="text" id="ad-search-no" oninput="renderAdsList()" 
-                                placeholder="매물번호로 검색..." 
+                                placeholder="매물번호, 주소, 상호명 검색..." 
                                 class="w-full bg-white border border-gray-200 rounded-xl px-10 py-3 text-sm outline-none focus:border-orange-500 shadow-sm transition-all">
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
                         </div>
@@ -1670,7 +1670,11 @@
             // 1. Filter
             let filteredAds = ads.filter(a => {
                 const matchesCategory = currentAdCategoryFilter === '전체' || a.category === currentAdCategoryFilter;
-                const matchesSearch = !searchNo || (a.data && a.data.ad_no && a.data.ad_no.includes(searchNo));
+                const matchesSearch = !searchNo || (a.data && (
+                    (a.data.ad_no && a.data.ad_no.includes(searchNo)) ||
+                    (a.data.address && a.data.address.includes(searchNo)) ||
+                    (a.data.biz_name && a.data.biz_name.includes(searchNo))
+                ));
                 return matchesCategory && matchesSearch;
             });
 
