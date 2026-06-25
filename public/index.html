@@ -379,30 +379,28 @@
                         </div>
                         
                         <!-- Dropdown Filters -->
-                        <div class="flex gap-2">
-                            <select id="ad-sort-type" onchange="renderAdsList()" class="flex-1 bg-white border border-gray-200 rounded-xl px-2 py-2 text-[12px] outline-none text-gray-600 focus:border-orange-500 shadow-sm">
-                                <option value="latest">최신 등록순</option>
-                                <option value="oldest">과거 등록순</option>
-                                <option value="no_asc">No 낮은순</option>
-                                <option value="no_desc">No 높은순</option>
+                        <div class="grid grid-cols-3 gap-2">
+                            <select id="ad-category-filter" onchange="setAdCategoryFilter(this.value)" class="w-full bg-white border border-gray-200 rounded-xl px-1 py-2 text-[11px] font-bold outline-none text-gray-600 focus:border-orange-500 shadow-sm text-center">
+                                <option value="전체">모든 매물</option>
+                                <option value="원.투.쓰리룸&공동주택">원룸/주택</option>
+                                <option value="상가">상가</option>
+                                <option value="주택&건물 통매매">건물매매</option>
+                                <option value="토지">토지</option>
+                                <option value="기타">기타</option>
                             </select>
-                            <select id="ad-usage-filter" onchange="renderAdsList()" class="flex-1 bg-white border border-gray-200 rounded-xl px-2 py-2 text-[12px] outline-none text-gray-600 focus:border-orange-500 shadow-sm">
-                                <option value="">용도 전체</option>
+                            <select id="ad-usage-filter" onchange="renderAdsList()" class="w-full bg-white border border-gray-200 rounded-xl px-1 py-2 text-[11px] font-bold outline-none text-gray-600 focus:border-orange-500 shadow-sm text-center">
+                                <option value="">모든 용도</option>
                                 <option value="매매">매매</option>
                                 <option value="전세">전세</option>
                                 <option value="월세">월세</option>
                                 <option value="년세">년세</option>
                             </select>
-                        </div>
-
-                        <!-- Category Filter (Horizontal Scroll) -->
-                        <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                            <button onclick="setAdCategoryFilter('전체')" class="category-chip active whitespace-nowrap" id="filter-ad-all">전체</button>
-                            <button onclick="setAdCategoryFilter('원.투.쓰리룸&공동주택')" class="category-chip whitespace-nowrap" id="filter-ad-room">🏠 원룸등</button>
-                            <button onclick="setAdCategoryFilter('상가')" class="category-chip whitespace-nowrap" id="filter-ad-store">🏬 상가</button>
-                            <button onclick="setAdCategoryFilter('주택&건물 통매매')" class="category-chip whitespace-nowrap" id="filter-ad-building">🏗️ 주택&건물</button>
-                            <button onclick="setAdCategoryFilter('토지')" class="category-chip whitespace-nowrap" id="filter-ad-land">⛳ 토지</button>
-                            <button onclick="setAdCategoryFilter('기타')" class="category-chip whitespace-nowrap" id="filter-ad-etc">📦 기타</button>
+                            <select id="ad-sort-type" onchange="renderAdsList()" class="w-full bg-white border border-gray-200 rounded-xl px-1 py-2 text-[11px] font-bold outline-none text-gray-600 focus:border-orange-500 shadow-sm text-center">
+                                <option value="latest">최신 등록순</option>
+                                <option value="oldest">과거 등록순</option>
+                                <option value="no_asc">No 낮은순</option>
+                                <option value="no_desc">No 높은순</option>
+                            </select>
                         </div>
                     </div>
 
@@ -1665,19 +1663,10 @@
 
         function setAdCategoryFilter(category) {
             currentAdCategoryFilter = category;
-            
-            // Update UI chips
-            document.querySelectorAll('.category-chip').forEach(chip => {
-                chip.classList.remove('active');
-            });
-            
-            if (category === '전체') document.getElementById('filter-ad-all').classList.add('active');
-            else if (category === '원.투.쓰리룸&공동주택') document.getElementById('filter-ad-room').classList.add('active');
-            else if (category === '상가') document.getElementById('filter-ad-store').classList.add('active');
-            else if (category === '주택&건물 통매매') document.getElementById('filter-ad-building').classList.add('active');
-            else if (category === '토지') document.getElementById('filter-ad-land').classList.add('active');
-            else if (category === '기타') document.getElementById('filter-ad-etc').classList.add('active');
-
+            const select = document.getElementById('ad-category-filter');
+            if (select && select.value !== category) {
+                select.value = category;
+            }
             renderAdsList();
         }
 
