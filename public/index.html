@@ -367,11 +367,16 @@
                     <!-- Search and Filter Header -->
                     <div class="mb-4 space-y-3">
                         <!-- Search Bar -->
-                        <div class="relative">
-                            <input type="text" id="ad-search-no" oninput="renderAdsList()" 
-                                placeholder="매물번호, 주소, 상호명 검색..." 
-                                class="w-full bg-white border border-gray-200 rounded-xl px-10 py-3 text-sm outline-none focus:border-orange-500 shadow-sm transition-all">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                        <div class="flex gap-2 mb-3">
+                            <div class="relative flex-1">
+                                <input type="text" id="ad-search-no" oninput="renderAdsList()" 
+                                    placeholder="매물번호, 주소, 상호명 검색..." 
+                                    class="w-full bg-white border border-gray-200 rounded-xl px-10 py-3 text-sm outline-none focus:border-orange-500 shadow-sm transition-all">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                            </div>
+                            <button onclick="toggleAdViewMode()" id="ad-view-toggle-btn" class="w-[46px] h-[46px] shrink-0 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-sm text-gray-500 hover:bg-gray-50 transition-colors text-lg" title="보기 모드 전환">
+                                🔲
+                            </button>
                         </div>
 
                         <!-- Category Filter (Horizontal Scroll) -->
@@ -527,6 +532,7 @@
         let ads = [];
         let adSyncTimeout = null;
         let currentAdCategoryFilter = '전체';
+        let isAdGridView = false;
 
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -1659,6 +1665,15 @@
             renderAdsList();
         }
 
+        function toggleAdViewMode() {
+            isAdGridView = !isAdGridView;
+            const btn = document.getElementById('ad-view-toggle-btn');
+            if (btn) {
+                btn.innerHTML = isAdGridView ? '📄' : '🔲';
+            }
+            renderAdsList();
+        }
+
         function renderAdsList() {
             const list = document.getElementById('ads-list');
             const empty = document.getElementById('ads-empty');
@@ -1692,27 +1707,51 @@
             }
             empty.classList.add('hidden');
 
+            if (isAdGridView) {
+                list.className = 'grid grid-cols-2 gap-3';
+            } else {
+                list.className = 'space-y-3 block';
+            }
+
             list.innerHTML = filteredAds.map(a => {
                 const d = a.data || {};
-                return `
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer hover:border-orange-300 transition-colors active:scale-[0.98]" onclick="openAdEditor('${a.id}')">
-                    <div class="flex justify-between items-start mb-2">
-                        <div class="flex gap-1 items-center">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-orange-100 text-orange-700">${a.category}</span>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-600">No.${d.ad_no || '-'}</span>
+                
+                if (isAdGridView) {
+                    return `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 cursor-pointer hover:border-orange-300 transition-colors flex flex-col active:scale-[0.98]" onclick="openAdEditor('${a.id}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 truncate max-w-[70%]">${a.category}</span>
+                            <button onclick="event.stopPropagation(); deleteAd('${a.id}')" class="text-red-400 hover:text-red-600 text-[10px] font-bold bg-red-50 rounded px-1.5 py-0.5 shrink-0 ml-1">삭제</button>
                         </div>
-                        <button onclick="event.stopPropagation(); deleteAd('${a.id}')" class="text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 bg-red-50 rounded">삭제</button>
+                        <span class="text-[10px] font-bold text-gray-400 mb-1">No.${d.ad_no || '-'}</span>
+                        <h3 class="font-bold text-gray-800 text-[13px] leading-tight mb-1 truncate">${d.address || '소재지 미입력'} ${d.room_no || ''}</h3>
+                        <div class="text-[11px] text-gray-500 font-bold text-blue-600 truncate mb-0.5">${d.usage_type || ''}</div>
+                        <div class="text-[11px] text-gray-500 truncate mb-0.5">${d.jeonse_price || d.rent || '가격 미정'}</div>
+                        <div class="text-[10px] text-gray-400 truncate">${d.biz_name || ''}</div>
                     </div>
-                    <h3 class="font-bold text-gray-800 mb-1">${d.address || '소재지 미입력'} ${d.room_no || ''}</h3>
-                    <div class="flex items-center gap-2 text-xs text-gray-500">
-                        <span class="font-bold text-blue-600">${d.usage_type || ''}</span>
-                        <span>|</span>
-                        <span>${d.jeonse_price || d.rent || '가격 미정'}</span>
-                        <span>|</span>
-                        <span>${d.biz_name || ''}</span>
+                    `;
+                } else {
+                    return `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer hover:border-orange-300 transition-colors active:scale-[0.98]" onclick="openAdEditor('${a.id}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex gap-1 items-center">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-orange-100 text-orange-700">${a.category}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-600">No.${d.ad_no || '-'}</span>
+                            </div>
+                            <button onclick="event.stopPropagation(); deleteAd('${a.id}')" class="text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 bg-red-50 rounded">삭제</button>
+                        </div>
+                        <h3 class="font-bold text-gray-800 mb-1">${d.address || '소재지 미입력'} ${d.room_no || ''}</h3>
+                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <span class="font-bold text-blue-600">${d.usage_type || ''}</span>
+                            <span>|</span>
+                            <span>${d.jeonse_price || d.rent || '가격 미정'}</span>
+                            <span>|</span>
+                            <span>${d.biz_name || ''}</span>
+                        </div>
                     </div>
-                </div>
-            `}).join('');
+                    `;
+                }
+            }).join('');
         }
 
         async function addAd(category) {
