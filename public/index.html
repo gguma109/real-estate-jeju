@@ -1738,44 +1738,35 @@
             if (isAdTableView) {
                 list.className = 'block';
                 list.innerHTML = `
-                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100 pb-2">
-                    <table class="w-full text-left whitespace-nowrap text-[11px]">
-                        <thead class="bg-gray-50 text-gray-600 border-b border-gray-100">
-                            <tr>
-                                <th class="px-3 py-2 font-bold">No</th>
-                                <th class="px-3 py-2 font-bold">유형</th>
-                                <th class="px-3 py-2 font-bold">소재지</th>
-                                <th class="px-3 py-2 font-bold">용도</th>
-                                <th class="px-3 py-2 font-bold">보증금/가격</th>
-                                <th class="px-3 py-2 font-bold">상호명</th>
-                                <th class="px-3 py-2 font-bold text-center">관리</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            ${filteredAds.map(a => {
-                                const d = a.data || {};
-                                let priceStr = d.sale_price || d.jeonse_price || d.rent || '-';
-                                if (d.usage_type === '월세' || d.usage_type === '년세') priceStr = (d.deposit ? d.deposit + '/' : '') + (d.rent || '-');
-                                else if (d.usage_type === '전세') priceStr = d.jeonse_price || d.deposit || '-';
-                                else if (d.usage_type === '매매') priceStr = d.sale_price || '-';
-                                else priceStr = (d.deposit ? d.deposit + '/' : '') + priceStr;
-                                
-                                return `
-                                <tr class="hover:bg-orange-50 cursor-pointer transition-colors" onclick="openAdEditor('${a.id}')">
-                                    <td class="px-3 py-2 text-gray-500">${d.ad_no || '-'}</td>
-                                    <td class="px-3 py-2 font-bold text-orange-600">${a.category.length > 5 ? a.category.substring(0,5)+'..' : a.category}</td>
-                                    <td class="px-3 py-2 font-bold text-gray-800">${d.address || '-'} ${d.room_no || ''}</td>
-                                    <td class="px-3 py-2 text-blue-600 font-bold">${d.usage_type || '-'}</td>
-                                    <td class="px-3 py-2 text-gray-600">${priceStr}</td>
-                                    <td class="px-3 py-2 text-gray-500">${d.biz_name || '-'}</td>
-                                    <td class="px-3 py-2 text-center">
-                                        <button onclick="event.stopPropagation(); deleteAd('${a.id}')" class="text-red-400 hover:text-red-600 font-bold bg-red-50 rounded px-1.5 py-0.5">삭제</button>
-                                    </td>
-                                </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
+                    ${filteredAds.map(a => {
+                        const d = a.data || {};
+                        let priceStr = d.sale_price || d.jeonse_price || d.rent || '-';
+                        if (d.usage_type === '월세' || d.usage_type === '년세') priceStr = (d.deposit ? d.deposit + '/' : '') + (d.rent || '-');
+                        else if (d.usage_type === '전세') priceStr = d.jeonse_price || d.deposit || '-';
+                        else if (d.usage_type === '매매') priceStr = d.sale_price || '-';
+                        else priceStr = (d.deposit ? d.deposit + '/' : '') + priceStr;
+                        
+                        return `
+                        <div class="p-3 hover:bg-orange-50 cursor-pointer transition-colors" onclick="openAdEditor('${a.id}')">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <div class="flex items-center gap-2 overflow-hidden">
+                                    <span class="text-[10px] font-bold text-gray-500 bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded shrink-0">No.${d.ad_no || '-'}</span>
+                                    <span class="text-[11px] font-bold text-orange-600 shrink-0">${a.category.length > 5 ? a.category.substring(0,5)+'..' : a.category}</span>
+                                    <span class="text-[13px] font-bold text-gray-800 truncate">${d.address || '-'} ${d.room_no || ''}</span>
+                                </div>
+                                <button onclick="event.stopPropagation(); deleteAd('${a.id}')" class="text-red-400 hover:text-red-600 font-bold bg-red-50 rounded px-1.5 py-0.5 text-[10px] shrink-0 ml-2">삭제</button>
+                            </div>
+                            <div class="flex items-center gap-2 text-[12px] pl-[2px]">
+                                <span class="font-bold text-blue-600 shrink-0">${d.usage_type || '-'}</span>
+                                <span class="text-gray-300">|</span>
+                                <span class="text-gray-700 font-bold shrink-0">${priceStr}</span>
+                                <span class="text-gray-300">|</span>
+                                <span class="text-gray-500 truncate">${d.biz_name || '-'}</span>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
                 </div>
                 `;
             } else {
