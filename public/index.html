@@ -400,9 +400,9 @@
                             </select>
                             <select id="ad-sort-type" onchange="renderAdsList()" class="w-full bg-white border border-gray-200 rounded-xl px-1 py-2 text-[11px] font-bold outline-none text-gray-600 focus:border-orange-500 shadow-sm text-center">
                                 <option value="latest">최신 등록순</option>
-                                <option value="oldest">과거 등록순</option>
-                                <option value="no_asc">No 낮은순</option>
-                                <option value="no_desc">No 높은순</option>
+                                <option value="oldest">옛날 등록순</option>
+                                <option value="no_asc" selected>No ⬆</option>
+                                <option value="no_desc">No ⬇</option>
                             </select>
                         </div>
                     </div>
@@ -2501,8 +2501,13 @@
             const dynamicData = { ...(ads[adIndex].data || {}) };
             const inputs = document.querySelectorAll('[id^="ad-field-"]');
             inputs.forEach(input => {
-                const key = input.id.replace('ad-field-', '');
-                dynamicData[key] = input.value;
+                let key = input.id.replace('ad-field-', '');
+                if (key === 'ad_no_num') {
+                    key = 'ad_no';
+                    dynamicData[key] = input.value ? 'JW-' + input.value : '';
+                } else {
+                    dynamicData[key] = input.value;
+                }
             });
 
             const updatedAd = {
