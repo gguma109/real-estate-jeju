@@ -378,9 +378,7 @@
                                     class="w-full bg-white border border-gray-200 rounded-xl px-10 py-3 text-sm outline-none focus:border-orange-500 shadow-sm transition-all">
                                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
                             </div>
-                            <button onclick="toggleAdViewMode()" id="ad-view-toggle-btn" class="w-[46px] h-[46px] shrink-0 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-sm text-gray-500 hover:bg-gray-50 transition-colors text-lg" title="보기 모드 전환">
-                                📊
-                            </button>
+                            
                         </div>
                         
                         <!-- Dropdown Filters -->
@@ -1693,14 +1691,7 @@
             renderAdsList();
         }
 
-        function toggleAdViewMode() {
-            isAdTableView = !isAdTableView;
-            const btn = document.getElementById('ad-view-toggle-btn');
-            if (btn) {
-                btn.innerHTML = isAdTableView ? '📄' : '📊';
-            }
-            renderAdsList();
-        }
+        
 
         function renderAdsList() {
             const list = document.getElementById('ads-list');
@@ -1708,7 +1699,7 @@
             const indicator = document.getElementById('loadingIndicatorAds');
             const searchNo = document.getElementById('ad-search-no').value.trim();
             const usageFilter = document.getElementById('ad-usage-filter') ? document.getElementById('ad-usage-filter').value : '';
-            const sortType = document.getElementById('ad-sort-type') ? document.getElementById('ad-sort-type').value : 'latest';
+            const sortType = document.getElementById('ad-sort-type') ? document.getElementById('ad-sort-type').value : 'no_asc';
 
             if (!indicator.classList.contains('hidden')) return;
 
@@ -1751,7 +1742,7 @@
             }
             empty.classList.add('hidden');
 
-            if (isAdTableView) {
+            if (true) {
                 list.className = 'block';
                 list.innerHTML = `
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
