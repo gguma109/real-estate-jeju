@@ -1851,10 +1851,54 @@
 
             const content = document.getElementById('ad-editor-content');
             content.innerHTML = `
+                <div id="ad-dup-warning" class="hidden bg-red-50 border border-red-200 text-red-600 p-3 mb-4 text-xs font-bold rounded-lg shadow-sm">
+                    <!-- 중복 경고 메시지가 이곳에 나타납니다 -->
+                </div>
                 <input type="hidden" id="editor-ad-id" value="${ad.id}">
                 <input type="hidden" id="editor-ad-category" value="${ad.category}">
                 ${generateAdForm(ad.category, ad.data)}
             `;
+
+            // 매물번호 및 주소/동호수 중복 검사 이벤트 연결
+            const dupFields = ['ad-field-ad_no', 'ad-field-address', 'ad-field-room_no'];
+            dupFields.forEach(fieldId => {
+                const el = document.getElementById(fieldId);
+                if (el) el.addEventListener('input', checkAdDuplication);
+            });
+            checkAdDuplication(); // 초기 로드 시에도 검사
+        }
+
+        function checkAdDuplication() {
+            const warningBox = document.getElementById('ad-dup-warning');
+            if (!warningBox) return;
+
+            const currentId = document.getElementById('editor-ad-id').value;
+            const elAdNo = document.getElementById('ad-field-ad_no');
+            const elAddress = document.getElementById('ad-field-address');
+            const elRoomNo = document.getElementById('ad-field-room_no');
+
+            const adNo = elAdNo ? elAdNo.value.trim() : '';
+            const address = elAddress ? elAddress.value.trim() : '';
+            const roomNo = elRoomNo ? elRoomNo.value.trim() : '';
+
+            // 매물번호 중복 확인 (완료된 매물은 제외)
+            const adNoDup = adNo ? ads.find(a => a.id !== currentId && a.data && a.data.status !== 'completed' && a.data.ad_no === adNo) : null;
+            
+            // 소재지+동호수 중복 확인 (완료된 매물 제외)
+            const addrDup = address ? ads.find(a => a.id !== currentId && a.data && a.data.status !== 'completed' && a.data.address === address && (a.data.room_no || '') === roomNo) : null;
+
+            if (adNoDup && addrDup && adNoDup.id === addrDup.id) {
+                warningBox.innerHTML = `⚠️ <b>경고:</b> 이미 동일한 매물이 존재합니다! (매물번호: ${adNoDup.data.ad_no})`;
+                warningBox.classList.remove('hidden');
+            } else if (adNoDup) {
+                warningBox.innerHTML = `⚠️ <b>경고:</b> 이미 사용 중인 매물번호입니다! (매물번호: ${adNoDup.data.ad_no})`;
+                warningBox.classList.remove('hidden');
+            } else if (addrDup) {
+                warningBox.innerHTML = `⚠️ <b>경고:</b> 동일한 소재지와 동호수를 가진 매물이 있습니다! (매물번호: ${addrDup.data.ad_no || '번호없음'})`;
+                warningBox.classList.remove('hidden');
+            } else {
+                warningBox.classList.add('hidden');
+            }
         }
 
         function generateAdForm(category, data) {
