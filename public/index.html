@@ -1001,6 +1001,7 @@
                             </select>
                         </div>
                         <div class="flex gap-2">
+                            <button onclick="convertRentalToAd('${r.id}')" class="text-blue-600 hover:text-white hover:bg-blue-600 font-bold text-xs px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50 shadow-sm active:scale-95 transition-all">광고로 등록</button>
                             <button onclick="copyToClipboard('${r.id}')" class="text-darkgreen hover:text-white hover:bg-darkgreen font-bold text-xs px-3 py-1.5 rounded-lg border border-green-100 bg-green-50 shadow-sm active:scale-95 transition-all">카톡 복사</button>
                             <button onclick="deleteRental('${r.id}')" class="text-red-400 hover:text-red-500 font-bold text-xs px-3 py-1.5 rounded-lg border border-red-100 bg-red-50 shadow-sm active:scale-95 transition-all">의뢰서 삭제</button>
                         </div>
@@ -2521,6 +2522,62 @@
             setTimeout(() => {
                 alert('재등록 모드로 전환되었습니다.\n새로운 매물 번호 등을 수정하신 후 우측 상단의 [저장] 버튼을 꼭 눌러주세요!');
             }, 100);
+        }
+
+        function convertRentalToAd(id) {
+            const r = rentals.find(item => item.id === id);
+            if (!r) return;
+
+            // 1. 카테고리 매핑
+            let adCategory = '상가/사무실';
+            if (['원룸', '1.5룸', '투룸', '쓰리룸', '아파트', '빌라'].includes(r.type)) adCategory = '원.투.쓰리룸&공동주택';
+            else if (r.type === '토지') adCategory = '토지';
+            else if (['주택', '건물'].includes(r.type)) adCategory = '주택&건물 통매매';
+            else if (r.type === '기타') adCategory = '기타';
+
+            // 2. 가격 유형 매핑
+            let usageType = '월세';
+            if (r.yearly_rent) usageType = '년세';
+            else if (r.sale_price) usageType = '매매';
+            else if (r.deposit && !r.rent) usageType = '전세';
+
+            // 3. 임시 매물 생성
+            const tempId = 'temp_' + Date.now();
+            const newAd = {
+                id: tempId,
+                category: adCategory,
+                data: {
+                    address: r.address || '',
+                    room_no: r.room || '',
+                    deposit: r.deposit || '',
+                    rent: r.rent || (r.yearly_rent || ''),
+                    jeonse_price: (usageType === '전세') ? (r.deposit || '') : '',
+                    sale_price: r.sale_price || '',
+                    premium: r.premium || '',
+                    biz_name: r.business_name || '',
+                    options: r.options || '',
+                    structure: r.structure || '',
+                    notes: r.special_notes || '',
+                    usage_type: usageType,
+                    type: r.type || '',
+                    area: r.exclusive_area || r.supply_area || '',
+                    status: 'active'
+                },
+                email: currentUserEmail
+            };
+
+            // 4. 로컬 광고 목록에 추가
+            ads.unshift(newAd);
+            
+            // 5. 탭 이동 및 에디터 열기
+            isAdCompletedTab = false;
+            setAdStatusTab('active');
+            switchTab('ads');
+            openAdEditor(tempId);
+            
+            setTimeout(() => {
+                alert('중개의뢰서의 정보가 성공적으로 복사되었습니다.\n나머지 정보(매물번호 등)를 채워 넣고 우측 상단의 [저장] 버튼을 눌러 광고로 등록해 주세요.');
+            }, 300);
         }
         async function copyAdDetails() {
             const inputs = document.querySelectorAll('[id^="ad-field-"]');
