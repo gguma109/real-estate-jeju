@@ -2378,7 +2378,7 @@
             const adIndex = ads.findIndex(a => a.id === id);
             if (adIndex === -1) return;
 
-            const dynamicData = {};
+            const dynamicData = { ...(ads[adIndex].data || {}) };
             const inputs = document.querySelectorAll('[id^="ad-field-"]');
             inputs.forEach(input => {
                 const key = input.id.replace('ad-field-', '');
@@ -2461,30 +2461,22 @@
         }
 
         async function restoreAdStatus(id) {
-            if (!confirm('이 매물을 다시 진행중으로 재등록하시겠습니까?')) return;
+            if (!confirm('이 매물을 재등록하시겠습니까? (새로운 매물번호를 입력할 수 있도록 입력창이 열립니다)')) return;
             const adIndex = ads.findIndex(a => a.id === id);
             if (adIndex === -1) return;
             
-            const updatedAd = {
-                ...ads[adIndex],
-                data: {
-                    ...ads[adIndex].data,
-                    status: 'active'
-                },
-                email: currentUserEmail
-            };
-
-            const res = await fetchWithAuth('/api/ads', {
-                method: 'POST',
-                body: JSON.stringify(updatedAd)
-            });
-
-            if (res && res.success) {
-                ads[adIndex] = { ...updatedAd, updated_at: new Date().toISOString() };
-                renderAdsList();
-            } else {
-                alert('재등록 처리에 실패했습니다.');
-            }
+            // 상태를 진행중으로 변경 (아직 DB 저장 안함)
+            ads[adIndex].data.status = 'active';
+            
+            // 뷰를 진행중 매물로 변경
+            setAdStatusTab('active');
+            
+            // 에디터 창 띄우기
+            openAdEditor(id);
+            
+            setTimeout(() => {
+                alert('재등록 모드로 전환되었습니다.\n새로운 매물 번호 등을 수정하신 후 우측 상단의 [저장] 버튼을 꼭 눌러주세요!');
+            }, 100);
         }
         async function copyAdDetails() {
             const inputs = document.querySelectorAll('[id^="ad-field-"]');
